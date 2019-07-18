@@ -7,6 +7,12 @@
     <meta name="theme-color" content="#444">
     <link rel="manifest" href="site.webmanifest">
     <link rel="apple-touch-icon" href="icon.png">
+    <style>
+      * {
+        background: #000;
+        color: #eee;
+      }
+    </style>
   </head>
   <body>
     <pre><code></code></pre>
@@ -23,19 +29,27 @@
         }
       }
 
-      console.log('foo',23)
-
-      function onLoad(e) {
-        console.log('onLoad',JSON.stringify(e),e.target.responseText,e.currentTarget.responseText)
+      function onLoad(msg,e) {
+        console.log('onLoad',msg,JSON.stringify(e),e.target.responseText,e.currentTarget.responseText)
       }
 
-      var oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad)
+      let oReq
+
+      console.log('req',1)
+      oReq = new XMLHttpRequest.org()
+      oReq.addEventListener('load', onLoad.bind(null,1))
       oReq.open('GET','real.xml')
       oReq.send()
 
-      var oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad)
+      console.log('req',2)
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,2))
+      oReq.open('GET','real.xml')
+      oReq.send()
+
+      console.log('req',3)
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,3))
       oReq.open('GET','real.xml')
       oReq.fake('GET','real.xml','<fake></fake>')
       oReq.send()

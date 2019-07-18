@@ -2,7 +2,8 @@ const OldXHR = window.XMLHttpRequest
 
 class FakeXMLHttpRequest extends OldXHR {
 
-  responseText = null
+  static org = OldXHR
+  _responseText = null
 
   constructor(...arg){
     super(...arg)
@@ -12,18 +13,23 @@ class FakeXMLHttpRequest extends OldXHR {
     super.open(method, url, async, user, password)
   } 
  
+  get responseText(){
+    return this._responseText||super.responseText
+  }
+
   fake(method, url, responseText){
-    this.responseText = responseText
+    this._responseText = responseText
   }
 
   send(){
-    console.log('send:', this.responseText)
+    console.log('send', !!this.responseText)
     if (this.responseText) {
       // ProgressEvent
       this.dispatchEvent(new CustomEvent('load',{
         responseText: this.responseText
-        ,detail: { responseText: this.responseText
- }
+        ,detail: {
+          responseText: this.responseText
+        }
       }))
     } else {
       super.send()
