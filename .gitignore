@@ -8,3 +8,4 @@ selenium-debug.log
 dist/wordpress/wp-content/uploads
 src/wordpress/**
 *.swp
+test/fakeXHR.js

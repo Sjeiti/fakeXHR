@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "node task/serve test 7777"
+    "serve": "node task/serve test 7777",
+    "cp": "cp src/index.js test/fakeXHR.js"
   },
   "author": "",
   "license": "ISC",

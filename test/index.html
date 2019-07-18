@@ -1,12 +1,21 @@
 <html>
-  <head></head>
+  <head>
+    <meta charset="utf-8">
+    <title>Fake XHR</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#444">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+  </head>
   <body>
     <pre><code></code></pre>
+    <script src="fakeXHR.js"></script>
     <script>
 
       const code = document.querySelector('code')
       const append = (...args)=>{
-        code.textContent += args.join(' ')
+        code.textContent += args.join(' ')+'\n'
       }
       for (let s in console){
         if (typeof console[s]==='function'){
@@ -16,14 +25,20 @@
 
       console.log('foo',23)
 
-      function reqListener () {
-        console.log(this.responseText);
+      function onLoad(e) {
+        console.log('onLoad',JSON.stringify(e),e.target.responseText,e.currentTarget.responseText)
       }
 
-      var oReq = new XMLHttpRequest();
-      oReq.addEventListener("load", reqListener);
-      oReq.open("GET", "http://www.example.org/example.txt")
-      oReq.send();
+      var oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad)
+      oReq.open('GET','real.xml')
+      oReq.send()
+
+      var oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad)
+      oReq.open('GET','real.xml')
+      oReq.fake('GET','real.xml','<fake></fake>')
+      oReq.send()
     </script>
   </body>
 </html>
