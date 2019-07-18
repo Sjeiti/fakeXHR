@@ -1,0 +1,29 @@
+<html>
+  <head></head>
+  <body>
+    <pre><code></code></pre>
+    <script>
+
+      const code = document.querySelector('code')
+      const append = (...args)=>{
+        code.textContent += args.join(' ')
+      }
+      for (let s in console){
+        if (typeof console[s]==='function'){
+          console[s] = append;
+        }
+      }
+
+      console.log('foo',23)
+
+      function reqListener () {
+        console.log(this.responseText);
+      }
+
+      var oReq = new XMLHttpRequest();
+      oReq.addEventListener("load", reqListener);
+      oReq.open("GET", "http://www.example.org/example.txt")
+      oReq.send();
+    </script>
+  </body>
+</html>
