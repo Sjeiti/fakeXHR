@@ -9,6 +9,11 @@ class FakeXMLHttpRequest extends OldXHR {
     this._fakeResponses.set(this._getKey(method, url, async, user, password), response)
   }
 
+  /**
+   * Create a key from function parameters
+   * @param {object[]} arg
+   * @returns {string}
+   */
   static _getKey(...arg){
     return arg.toString(arg)
   }
