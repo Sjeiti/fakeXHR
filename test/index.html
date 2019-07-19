@@ -38,62 +38,71 @@
       }
 
       function onLoad(msg,e) {
-        console.log('onLoad',msg,JSON.stringify(e),e.target.responseText,e.currentTarget.responseText)
+        console.log('onLoad',msg,JSON.stringify(e),e.currentTarget.responseText)
       }
 
+      const fakeStatic = '<fake>static</fake>'
+      const fakeLocal = '<fake>local</fake>'
+      const getReal = ['GET','real.xml']
       let oReq
 
       // original
       console.log('req',1)
       oReq = new XMLHttpRequest.org()
       oReq.addEventListener('load', onLoad.bind(null,1))
-      oReq.open('GET','real.xml')
+      oReq.open(...getReal)
       oReq.send()
 
       // unused override
       console.log('req',2)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,2))
-      oReq.open('GET','real.xml')
+      oReq.open(...getReal)
       oReq.send()
 
       // local override
       console.log('req',3)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,3))
-      oReq.fake('<fake>local</fake>','GET','real.xml')
-      oReq.open('GET','real.xml')
+      oReq.fake(fakeLocal,...getReal)
+      oReq.open(...getReal)
       oReq.send()
 
       // global override
       console.log('req',4)
-      XMLHttpRequest.fake('<fake>static</fake>','GET','real.xml')
+      XMLHttpRequest.fake(fakeStatic,...getReal)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,4))
-      oReq.open('GET','real.xml')
+      oReq.open(...getReal)
       oReq.send()
 
       // global override persists
       console.log('req',5)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,5))
-      oReq.open('GET','real.xml')
+      oReq.open(...getReal)
       oReq.send()
 
       // local override takes precedence
       console.log('req',6)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,6))
-      oReq.fake('<fake>local</fake>','GET','real.xml')
-      oReq.open('GET','real.xml')
+      oReq.fake(fakeLocal,...getReal)
+      oReq.open(...getReal)
       oReq.send()
 
       // cache busting
       console.log('req',7)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,7))
+
+      oReq.onreadystatechange = function() {
+        console.log(this.readyState,this.status,this.responseText) 
+      }
+
       oReq.open('GET','real.xml?123')
       oReq.send()
+
     </script>
   </body>
 </html>

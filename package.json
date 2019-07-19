@@ -1,11 +1,13 @@
 {
   "name": "fakexhr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fake responses for individual endpoints",
-  "main": "src/index.js",
-  "directories": {
-    "test": "test"
-  },
+  "keywords": [
+    "XHR",
+    "XMLHttpRequest",
+    "wrapper"
+  ],
+  "main": "src/index.js", 
   "scripts": {
     "start": "run-p watch serve",
     "watch": "chokidar \"src/**/*.*\" -c \"npm run cp\"",
@@ -17,7 +19,7 @@
   "gitHooks": {
     "pre-commit": "npm run version"
   },
-  "author": "Ron Valstar",
+  "author": "Ron Valstar <ron@ronvalstar.nl>",
   "license": "ISC",
   "devDependencies": {
     "chokidar-cli": "^1.2.2",
