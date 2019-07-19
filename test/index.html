@@ -19,10 +19,18 @@
     <script src="fakeXHR.js"></script>
     <script>
 
+      window.onerror = function(msg, url, line, col, error) {
+         let extra = !col ? '' : '\ncolumn: ' + col;
+         extra += !error ? '' : '\nerror: ' + error;
+         console.error("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
+      }
+
       const code = document.querySelector('code')
       const append = (...args)=>{
         code.textContent += args.join(' ')+'\n'
       }
+
+      // fake console
       for (let s in console){
         if (typeof console[s]==='function'){
           console[s] = append;
@@ -35,23 +43,56 @@
 
       let oReq
 
+      // original
       console.log('req',1)
       oReq = new XMLHttpRequest.org()
       oReq.addEventListener('load', onLoad.bind(null,1))
       oReq.open('GET','real.xml')
       oReq.send()
 
+      // unused override
       console.log('req',2)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,2))
       oReq.open('GET','real.xml')
       oReq.send()
 
+      // local override
       console.log('req',3)
       oReq = new XMLHttpRequest()
       oReq.addEventListener('load', onLoad.bind(null,3))
+      oReq.fake('<fake>local</fake>','GET','real.xml')
       oReq.open('GET','real.xml')
-      oReq.fake('GET','real.xml','<fake></fake>')
+      oReq.send()
+
+      // global override
+      console.log('req',4)
+      XMLHttpRequest.fake('<fake>static</fake>','GET','real.xml')
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,4))
+      oReq.open('GET','real.xml')
+      oReq.send()
+
+      // global override persists
+      console.log('req',5)
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,5))
+      oReq.open('GET','real.xml')
+      oReq.send()
+
+      // local override takes precedence
+      console.log('req',6)
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,6))
+      oReq.fake('<fake>local</fake>','GET','real.xml')
+      oReq.open('GET','real.xml')
+      oReq.send()
+
+      // cache busting
+      console.log('req',7)
+      oReq = new XMLHttpRequest()
+      oReq.addEventListener('load', onLoad.bind(null,7))
+      oReq.open('GET','real.xml?123')
       oReq.send()
     </script>
   </body>
