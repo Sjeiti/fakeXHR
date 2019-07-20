@@ -38,71 +38,62 @@
       }
 
       function onLoad(msg,e) {
-        console.log('onLoad',msg,JSON.stringify(e),e.currentTarget.responseText)
+        const req = e.currentTarget
+        console.log(
+          Date.now()
+          ,msg
+          ,e.type
+          ,req.readyState
+          ,req.status
+          ,req.statusText
+          ,req.responseText.replace(/\n|\r/g,'')
+          ,JSON.stringify(e)
+        )
       }
 
+      const getReal = ['GET','real.xml']
+      const events = ['readystatechange','loadstart','load','loadend']
+      const addEvents = (req,msg,doFake,openParams) => {
+        console.log(Date.now(),msg,'new')
+        req = req||new  XMLHttpRequest()
+        events.map(name=>req.addEventListener(name,onLoad.bind(null,msg)))
+        doFake&&doFake(req)
+        console.log(Date.now(),msg,'open()')
+        req.open(...(openParams||getReal))
+        console.log(Date.now(),msg,'send()')
+        req.send()
+        console.log(Date.now(),msg,'sent')
+      }
       const fakeStatic = '<fake>static</fake>'
       const fakeLocal = '<fake>local</fake>'
-      const getReal = ['GET','real.xml']
       let oReq
 
       // original
-      console.log('req',1)
-      oReq = new XMLHttpRequest.org()
-      oReq.addEventListener('load', onLoad.bind(null,1))
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(
+        new XMLHttpRequest.org()
+        ,1
+        ,req=>req.open(...getReal)
+      )
 
       // unused override
-      console.log('req',2)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,2))
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(null,2)
 
       // local override
-      console.log('req',3)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,3))
-      oReq.fake(fakeLocal,...getReal)
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(null,3,req=>req.fake(fakeLocal,...getReal))
 
       // global override
-      console.log('req',4)
       XMLHttpRequest.fake(fakeStatic,...getReal)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,4))
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(null,4)
 
       // global override persists
-      console.log('req',5)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,5))
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(null,5)
 
       // local override takes precedence
-      console.log('req',6)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,6))
-      oReq.fake(fakeLocal,...getReal)
-      oReq.open(...getReal)
-      oReq.send()
+      addEvents(null,6,req=>req.fake(fakeLocal,...getReal))
 
       // cache busting
-      console.log('req',7)
-      oReq = new XMLHttpRequest()
-      oReq.addEventListener('load', onLoad.bind(null,7))
-
-      oReq.onreadystatechange = function() {
-        console.log(this.readyState,this.status,this.responseText) 
-      }
-
-      oReq.open('GET','real.xml?123')
-      oReq.send()
-
+      addEvents(null,7,null,['GET','real.xml?123'])
+ 
     </script>
   </body>
 </html>

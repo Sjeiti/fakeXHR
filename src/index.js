@@ -72,18 +72,37 @@ class FakeXMLHttpRequest extends OldXHR {
 
   /**
    * Overridden `send`
+     Lifecycle:
+      578   instantiate request
+      579 readystatechange   1 0                       {"isTrusted":true}
+      579   request.open()
+      579   request.send()
+      580 loadstart          1 0                       {"isTrusted":true}
+      581   request sent
+      617 readystatechange   2 200 OK                  {"isTrusted":true}
+      618 readystatechange   3 200 OK <real>xml</real> {"isTrusted":true}
+      619 readystatechange   4 200 OK <real>xml</real> {"isTrusted":true}
+      619 load               4 200 OK <real>xml</real> {"isTrusted":true}
+      619 loadend            4 200 OK <real>xml</real> {"isTrusted":true}
    */
   send(){
     if (this.responseText) {
-      this.dispatchEvent(new ProgressEvent('loadstart'))
-      this._readyState = 4
-      this._status = 200 
-      this._statusText = '200 OK'
-      this.dispatchEvent(new ProgressEvent('load'))
-      this.dispatchEvent(new ProgressEvent('loadend'))
+      this._dispatch('loadstart',1,0)
+      this._dispatch('readystatechange',2,200)
+      this._dispatch('readystatechange',3,200)
+      this._dispatch('readystatechange',4,200)
+      this._dispatch('load',4,200)
+      this._dispatch('loadend',4,200)
     } else {
       super.send()
     }
+  }
+
+  _dispatch(type,state,status){
+    this._readyState = state
+    this._status = status
+    this._statusText = {0:'',200:'OK'}
+    this.dispatchEvent(new ProgressEvent(type))
   }
 }
 window.XMLHttpRequest = FakeXMLHttpRequest
