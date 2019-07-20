@@ -2,7 +2,7 @@ const OldXHR = window.XMLHttpRequest
 
 class FakeXMLHttpRequest extends OldXHR {
 
-  static org = OldXHR
+  static original = OldXHR
   static _fakeResponses = new Map()
   
   /**
@@ -56,7 +56,10 @@ class FakeXMLHttpRequest extends OldXHR {
   }
 
   get responseText(){
-    return this._responseText||super.responseText
+    const {_responseText} = this
+    return _responseText
+      &&(typeof _responseText==='function'?_responseText(super.responseText):_responseText)
+      ||super.responseText
   }
 
   /**
@@ -65,9 +68,9 @@ class FakeXMLHttpRequest extends OldXHR {
    * @param {string} response
    * @param {object[]} openParams
    */
-  fake(response, method, url, async, user, password){
+  fake(response, ...openParams){
     const {constructor} = this
-    this._fakeResponses.set(constructor._getKey(method, url, async, user, password), response)
+    this._fakeResponses.set(constructor._getKey(...openParams), response)
   }
 
   /**
@@ -86,7 +89,7 @@ class FakeXMLHttpRequest extends OldXHR {
       619 loadend            4 200 OK <real>xml</real> {"isTrusted":true}
    */
   send(){
-    if (this.responseText) {
+    if (this.responseText&&typeof this._responseText!=='function') {
       this._dispatch('loadstart',1,0)
       this._dispatch('readystatechange',2,200)
       this._dispatch('readystatechange',3,200)
@@ -101,7 +104,7 @@ class FakeXMLHttpRequest extends OldXHR {
   _dispatch(type,state,status){
     this._readyState = state
     this._status = status
-    this._statusText = {0:'',200:'OK'}
+    this._statusText = {0:'',200:'OK'}[status]||''
     this.dispatchEvent(new ProgressEvent(type))
   }
 }

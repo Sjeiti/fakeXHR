@@ -70,7 +70,7 @@
 
       // original
       addEvents(
-        new XMLHttpRequest.org()
+        new XMLHttpRequest.original()
         ,1
         ,req=>req.open(...getReal)
       )
@@ -91,9 +91,12 @@
       // local override takes precedence
       addEvents(null,6,req=>req.fake(fakeLocal,...getReal))
 
+      // local intercept
+      addEvents(null,7,req=>req.fake(result=>`<wrap>${result}</wrap>`,...getReal))
+
       // cache busting
-      addEvents(null,7,null,['GET','real.xml?123'])
- 
+      addEvents(null,8,null,['GET','real.xml?123'])
+  
     </script>
   </body>
 </html>
