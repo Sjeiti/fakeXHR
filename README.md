@@ -1,4 +1,4 @@
-# fakexhr
+# fakeXHRr
 
 A small XMLHttpRequest wrapper for intercepting
 or faking responses.
@@ -11,7 +11,7 @@ The module is plain untranspiled es6.
 npm i -S fakexhr
 ```
 
-## usage
+## Usage
 
 When loaded will take over `window.XMLHttpRequest`.
 The original class will be stored at
@@ -23,7 +23,7 @@ real one so it will work the same.
 The XHR instances will have an extra method called
 `fake`.
 
-### faking the XHR response
+### Faking the XHR response
 
 The first parameter is the string you want the 
 response to be. The remaining parameters are the
@@ -48,7 +48,11 @@ xhr.open('GET', 'file.xml')
 xhr.send()
 ```
 
-### hijacking the XHR response
+Contrary to hijacking a response, faking it will not
+send an actual HTTP request. This also means the fired
+events will have the `isTrusted` property set to `false`.
+
+### Hijacking the XHR response
 
 To alter an existing request you can hijack it by
 overloading the same to methods. Simply replace the

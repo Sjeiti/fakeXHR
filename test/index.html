@@ -47,9 +47,12 @@
           ,req.status
           ,req.statusText
           ,req.responseText.replace(/\n|\r/g,'')
+          ,req.responseXML
           ,JSON.stringify(e)
         )
       }
+
+//console.log('XMLHttpRequest.readyState',XMLHttpRequest.original.readyState.DONE)
 
       const getReal = ['GET','real.xml']
       const events = ['readystatechange','loadstart','load','loadend']

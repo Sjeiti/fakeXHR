@@ -4,7 +4,14 @@ class FakeXMLHttpRequest extends OldXHR {
 
   static original = OldXHR
   static _fakeResponses = new Map()
-  
+  static _readyState = {
+    UNSENT: 0
+    ,OPENED: 1
+    ,HEADERS_RECEIVED: 2
+    ,LOADING: 3
+    ,DONE: 4
+  }
+
   /**
    * Store a fake response to the `open` method signature
    * The static implementation also fakes later instantiations
@@ -29,6 +36,7 @@ class FakeXMLHttpRequest extends OldXHR {
   _status
   _statusText
   _responseText = null
+  _parser = new DOMParser()
 
   constructor(...arg){
     super(...arg)
@@ -55,11 +63,19 @@ class FakeXMLHttpRequest extends OldXHR {
     return this._statusText||super.statusText
   }
 
+  get response(){
+    return this._responseText||super.response 
+  }
+
   get responseText(){
     const {_responseText} = this
     return _responseText
       &&(typeof _responseText==='function'?_responseText(super.responseText):_responseText)
       ||super.responseText
+  }
+
+  get responseXML(){
+    return this.responseText&&this._parser.parseFromString(this.responseText, 'text/xml')||super.responseXML;
   }
 
   /**
@@ -89,13 +105,14 @@ class FakeXMLHttpRequest extends OldXHR {
       619 loadend            4 200 OK <real>xml</real> {"isTrusted":true}
    */
   send(){
+    const {OPENED,HEADERS_RECEIVED,LOADING,DONE} = this.constructor._readyState
     if (this.responseText&&typeof this._responseText!=='function') {
-      this._dispatch('loadstart',1,0)
-      this._dispatch('readystatechange',2,200)
-      this._dispatch('readystatechange',3,200)
-      this._dispatch('readystatechange',4,200)
-      this._dispatch('load',4,200)
-      this._dispatch('loadend',4,200)
+      this._dispatch('loadstart',OPENED,0)
+      this._dispatch('readystatechange',HEADERS_RECEIVED,200)
+      this._dispatch('readystatechange',LOADING,200)
+      this._dispatch('readystatechange',DONE,200)
+      this._dispatch('load',DONE,200)
+      this._dispatch('loadend',DONE,200)
     } else {
       super.send()
     }
