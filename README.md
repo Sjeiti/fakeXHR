@@ -1,4 +1,4 @@
-# fakeXHRr
+# fakeXHR
 
 A small XMLHttpRequest wrapper for intercepting
 or faking responses.
